@@ -10,30 +10,47 @@ export default function Icon() {
   const [coord,setCoord] = useState<TPoint2D>();
   const [offset, setOffset] = useState<TPoint2D>();
   const iconRef: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+  const [isDown, setIsDown] = useState<boolean>(false);
 
-  // Handles mobile movement
-
-  function handleTouch(e: React.TouchEvent<HTMLDivElement>) {
+  function handleDown(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (!iconRef.current || !iconRef) {
       throw new Error('No reference found to icon for mobile touch')
     }
     const icon = iconRef.current.getBoundingClientRect();
+    setIsDown(true);
 
-    setOffset({
-      x: e.touches[0].clientX - icon.left,
-      y: e.touches[0].clientY - icon.top,
-    });
+    if ('touches' in e) {
+      setOffset({
+        x: e.touches[0].clientX - icon.left,
+        y: e.touches[0].clientY - icon.top,
+      });
+    } else {
+      setOffset({
+        x: e.clientX - icon.left,
+        y: e.clientY - icon.top,
+      });    
+    }
   }
 
-  function handleDrag(e: React.TouchEvent<HTMLDivElement>) {
-    const { clientX, clientY } = e.touches[0];
-    setCoord({
-      x: clientX - offset!.x,
-      y: clientY - offset!.y,
-    });
+  function handleMove(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (!isDown || !offset) return;
+
+    if ('touches' in e) {
+      const { clientX, clientY } = e.touches[0];
+      setCoord({
+        x: clientX - offset.x,
+        y: clientY - offset.y,
+      });
+    } else {
+      setCoord({
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y,
+      });
+    }
   }
 
-  function handleTouchStop(e: React.TouchEvent<HTMLDivElement>) {
+  function handleStop(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    setIsDown(false);  
     setOffset({
       x: 0,
       y: 0,
@@ -48,9 +65,14 @@ export default function Icon() {
         top: `${coord?.y}px`
       }}
       className={styles.iconWrapper}
-      onTouchMove={(e: React.TouchEvent<HTMLDivElement>)=>handleDrag(e)}
-      onTouchStart={(e: React.TouchEvent<HTMLDivElement>)=>handleTouch(e)}
-      onTouchEnd={(e: React.TouchEvent<HTMLDivElement>)=>handleTouchStop(e)}
+      // Desktop control using mouse events
+      onMouseDown={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => handleDown(e)}
+      onMouseMove={(e) => handleMove(e)}
+      onMouseUp={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => handleStop(e)}
+      // Mobile control using Touch API
+      onTouchMove={(e: React.TouchEvent<HTMLDivElement>)=>handleMove(e)}
+      onTouchStart={(e: React.TouchEvent<HTMLDivElement>)=>handleDown(e)}
+      onTouchEnd={(e: React.TouchEvent<HTMLDivElement>)=>handleStop(e)}
     />
   )
 }
