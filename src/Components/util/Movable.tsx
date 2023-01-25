@@ -1,4 +1,4 @@
-import React, { Children, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 type TPoint2D = {
   x: number,

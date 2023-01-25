@@ -13,7 +13,6 @@ export const Canvas = ( {movableItems}: TCanvasProps ): JSX.Element => {
 
     movableItems.forEach((itemRef:React.RefObject<HTMLDivElement>, index: number) => {
       const item = itemRef.current;
-      console.log("🚀 ~ file: Canvas.tsx:16 ~ movableItems.forEach ~ item", item)
       if (!item) return;
 
       const itemBounds = item.getBoundingClientRect();
@@ -31,16 +30,7 @@ export const Canvas = ( {movableItems}: TCanvasProps ): JSX.Element => {
       }
       
       ctx.stroke();
-    })
-
-
-
-    
-
-    ctx.beginPath();
-
-
-
+    });
   }, [movableItems]);
   
   return (
