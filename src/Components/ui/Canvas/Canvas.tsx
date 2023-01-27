@@ -1,22 +1,26 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { useMovable } from '../../util/MovableContext';
 import styles from './Canvas.module.scss';
 
-export const Canvas = ( {movableItems}: TCanvasProps ): JSX.Element => {
+type TCanvasProps = {
+}
+
+export const Canvas = (): JSX.Element => {
+  
+  const { movableItems } = useMovable();
+
   // Create ref for canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     const canvas: HTMLCanvasElement | null = canvasRef.current;
     if (!canvas) return;
     const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
     if (!ctx) return;
 
-    movableItems.forEach((itemRef:React.RefObject<HTMLDivElement>, index: number) => {
-      const item = itemRef.current;
-      if (!item) return;
+    ctx.beginPath();
 
-      const itemBounds = item.getBoundingClientRect();
-
+    movableItems.forEach((itemBounds: DOMRect, index: number) => {
       if (index===0) {
         ctx.moveTo(
           itemBounds.x + itemBounds.width / 2,
@@ -28,9 +32,9 @@ export const Canvas = ( {movableItems}: TCanvasProps ): JSX.Element => {
           itemBounds.y + itemBounds.height / 2
         );
       }
-      
-      ctx.stroke();
+      console.log("🚀 ~ file: Canvas.tsx:41 ~ movableItems.forEach ~ ctx", ctx)
     });
+    ctx.stroke();
   }, [movableItems]);
   
   return (
@@ -40,8 +44,3 @@ export const Canvas = ( {movableItems}: TCanvasProps ): JSX.Element => {
     />
   )
 }
-
-type TCanvasProps = {
-  movableItems: React.RefObject<HTMLDivElement>[];
-}
-

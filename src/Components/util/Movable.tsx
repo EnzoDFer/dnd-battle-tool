@@ -39,6 +39,7 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
     if (!iconRef.current || !iconRef) {
       throw new Error('No reference found to icon for mobile touch')
     }
+
     const icon = iconRef.current.getBoundingClientRect();
     setIsDown(true);
 
@@ -85,7 +86,7 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
    * @param e - MouseEvent or TouchEvent
    */
   function handleStop(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    setIsDown(false);  
+    setIsDown(false);
     // Reset the offset values when the user stops moving the element
     setOffset({
       x: 0,
