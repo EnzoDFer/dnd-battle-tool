@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useMovable } from './MovableContext'
 
 /**
  * TPoint2D type describes x and y coordinates
@@ -27,7 +28,15 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
   const [coord,setCoord] = useState<TPoint2D>();
   const [offset, setOffset] = useState<TPoint2D>();
   const iconRef: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+  const [bounds, setBounds] = useState<DOMRect>();
   const [isDown, setIsDown] = useState<boolean>(false);
+  const { addMovableItems, removeMovableItem } = useMovable();
+
+  useEffect(() => {
+    if (!iconRef || !iconRef.current) return;
+    setBounds(iconRef.current.getBoundingClientRect())
+  }, [coord]);
+    
 
   /**
    * handleDown is a function that sets the initial position of the children component
@@ -36,22 +45,19 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
    * @param e - MouseEvent or TouchEvent
    */
   function handleDown(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (!iconRef.current || !iconRef) {
-      throw new Error('No reference found to icon for mobile touch')
-    }
-
-    const icon = iconRef.current.getBoundingClientRect();
+    if (!bounds) throw new Error('No bounds found for object');
+    removeMovableItem(bounds);
     setIsDown(true);
 
     if ('touches' in e) {
       setOffset({
-        x: e.touches[0].clientX - icon.left,
-        y: e.touches[0].clientY - icon.top,
+        x: e.touches[0].clientX - bounds.left,
+        y: e.touches[0].clientY - bounds.top,
       });
     } else {
       setOffset({
-        x: e.clientX - icon.left,
-        y: e.clientY - icon.top,
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top,
       });    
     }
   }
@@ -64,6 +70,7 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
    */
   function handleMove(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (!isDown || !offset) return;
+
 
     if ('touches' in e) {
       const { clientX, clientY } = e.touches[0];
@@ -86,6 +93,8 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
    * @param e - MouseEvent or TouchEvent
    */
   function handleStop(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (!bounds) throw new Error('No bounds found for object');
+    addMovableItems([bounds]);
     setIsDown(false);
     // Reset the offset values when the user stops moving the element
     setOffset({
