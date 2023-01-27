@@ -6,7 +6,7 @@ type TCanvasProps = {
 }
 
 export const Canvas = (): JSX.Element => {
-  
+
   const { movableItems } = useMovable();
 
   // Create ref for canvas
@@ -32,7 +32,7 @@ export const Canvas = (): JSX.Element => {
           itemBounds.y + itemBounds.height / 2
         );
       }
-      console.log("🚀 ~ file: Canvas.tsx:41 ~ movableItems.forEach ~ ctx", ctx)
+      console.log("🚀 ~ file: Canvas.tsx:41 ~ movableItems.forEach ~ ctx", itemBounds)
     });
     ctx.stroke();
   }, [movableItems]);

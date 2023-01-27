@@ -47,6 +47,7 @@ export const Movable = ( {children}:TMovableProps ): JSX.Element => {
   function handleDown(e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (!bounds) throw new Error('No bounds found for object');
     removeMovableItem(bounds);
+    
     setIsDown(true);
 
     if ('touches' in e) {

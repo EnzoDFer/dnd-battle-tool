@@ -52,12 +52,12 @@ const reducer = (state: TMovableState, action: { type: TActionTypes; payload: TM
 export const MovableProvider = ( {children}: TMovableProviderProps ) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  function addMovableItems(items: DOMRect[]) {
-    dispatch({type: 'ADD_ITEM', payload: {movableItems: items}})
+  function addMovableItems(items: DOMRect[]): void {
+    dispatch({type: 'ADD_ITEM', payload: {movableItems: items}});
   }
 
-  function removeMovableItem(item:DOMRect) {
-    dispatch({type: 'REMOVE_ITEM', payload: {movableItems: [item]}})
+  function removeMovableItem(item:DOMRect): void {
+    dispatch({type: 'REMOVE_ITEM', payload: {movableItems: [item]}});
   }
 
   return (
